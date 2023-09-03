@@ -189,6 +189,7 @@ class LibJuiceFS(LibJuiceFSHandle):
     def __init__(self, path, name: str, config: dict):
         self._lib = CDLL(path)
         self._handle = self.init(name, config)
+        super().__init__(self._lib, self._handle)
 
     def init(self, name: str, config: dict):
         handle = self._lib.jfs_init(

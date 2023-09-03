@@ -1,5 +1,6 @@
 import errno
 import os
+import platform
 import posixpath
 import stat
 import struct
@@ -24,30 +25,40 @@ from juicefs.utils import check_juicefs_error, create_os_error
 DEFAULT_FILE_MODE = 0o777
 DEFAULT_DIRECOTRY_MODE = 0o777
 DEFAULT_CONFIG = {
-    "accessLog": "",
-    "autoCreate": True,
-    "cacheDir": "memory",
-    "cacheFullBlock": True,
-    "cacheSize": 100,
-    "debug": True,
-    "fastResolve": True,
-    "freeSpace": "0.1",
-    "getTimeout": 5,
-    "maxUploads": 20,
-    "memorySize": 300,
-    "meta": "",
-    "noUsageReport": True,
-    "opencache": False,
-    # "openCache": 0.0,  # v0.15.0 变成了 float
-    "prefetch": 1,
-    "pushAuth": "",
-    "pushGateway": "",
-    "pushInterval": 10,
-    "putTimeout": 60,
-    "readahead": 0,
-    "readOnly": False,
-    "uploadLimit": 0,
-    "writeback": False,
+    'meta': '',
+    'bucket': '',
+    'readOnly': False,
+    'noBGJob': False,
+    'openCache': 0.0,
+    'backupMeta': 3600,
+    'heartbeat': 12,
+    'cacheDir': '$HOME/.juicefs/cache',
+    'cacheSize': 102400,
+    'freeSpace': '0.1',
+    'autoCreate': False,
+    'cacheFullBlock': False,
+    'writeback': False,
+    'memorySize': 300,
+    'prefetch': 1,
+    'readahead': 0,
+    'uploadLimit': 0,
+    'downloadLimit': 0,
+    'maxUploads': 20,
+    'maxDeletes': 10,
+    'ioRetries': 10,
+    'getTimeout': 5,
+    'putTimeout': 60,
+    'fastResolve': True,
+    'attrTimeout': 0,
+    'dirTimeout': 0,
+    'dirEntryTimeout': 0,
+    'debug': False,
+    'noUsageReport': True,
+    'accessLog': '',
+    'pushGateway': '',
+    'pushInterval': 10,
+    'pushAuth': '',
+    'pushGraphite': ''
 }
 
 
@@ -85,9 +96,17 @@ class JuiceFS:
         jfs_config = DEFAULT_CONFIG.copy()
         jfs_config.update(config)
 
-        path = os.path.normpath(os.path.join(__file__, "..", "lib", "libjfs.so"))
+        machine = platform.machine()
+        arch = 'amd64'
+        if machine == 'aarch64':
+            arch = 'arm64'
+        path = os.path.normpath(os.path.join(__file__, "..", "lib", f"libjfs-{arch}.so"))
         if sys.platform == "win32":
-            path = os.path.normpath(os.path.join(__file__, "..", "lib", "libjfs.dll"))
+            path = os.path.normpath(os.path.join(__file__, "..", "lib", f"libjfs-{arch}.dll"))
+        if sys.platform == "darwin":
+            if machine == 'arm64':
+                arch = machine
+            path = os.path.normpath(os.path.join(__file__, "..", "lib", f"libjfs-{arch}.dylib"))
 
         self._lib = LibJuiceFS(path, name, jfs_config)
         self._name = name

@@ -10,6 +10,6 @@ __pycache__/
 html_cov/
 html_doc/
 
-juicefs/lib/juicefs
-juicefs/lib/libjfs.so
+juicefs/lib/juicefs*
+juicefs/lib/libjfs*
 wheelhouse/
