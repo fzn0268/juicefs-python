@@ -90,7 +90,7 @@ class JuiceFS:
     ):
         """JuiceFS Session
 
-        :param str name: Redis URI used for this session
+        :param str name: Name used for file system connection instance
         :param dict config: JuiceFS configuration, available keys: https://github.com/juicedata/juicefs/blob/main/sdk/java/libjfs/main.go#L215
         """
         jfs_config = DEFAULT_CONFIG.copy()
