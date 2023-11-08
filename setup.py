@@ -2,7 +2,6 @@ import platform
 import sys
 from importlib.machinery import SourceFileLoader
 
-from distutils.util import get_platform
 from setuptools import find_packages, setup
 
 
@@ -61,5 +60,5 @@ setup(
     tests_require=test_requirements,
     install_requires=requirements,
     python_requires=">=3.5",
-    platforms=get_platform(),
+    platforms=machine,
 )

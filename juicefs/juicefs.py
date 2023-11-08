@@ -217,18 +217,20 @@ class JuiceFS:
         bufsize = 32 << 10
         buf = create_string_buffer(bufsize)
         code = self._lib.listdir(path, 0, buf, bufsize)
+        file_no = 0
         while code > 0:
             buffer = BytesIO(buf.raw)
             while buffer.tell() < code:
                 name = buffer.read(ord(buffer.read(1))).decode()
                 length = ord(buffer.read(1))
-                stat = create_stat_result(buffer.read(length), length)
-                yield DirEntry(name, path, stat)
+                fstat = create_stat_result(buffer.read(length), length)
+                file_no += 1
+                yield DirEntry(name, path, fstat)
             left = struct.unpack("<I", buffer.read(4))[0]
             if left == 0:
                 break
             fd = struct.unpack("<I", buffer.read(4))[0]
-            code = self._lib.listdir(path, 0, fd, bufsize)
+            code = self._lib[fd].listdir(path, file_no, buf, bufsize)
         check_juicefs_error(code, path)
 
     def listdir(self, path: str) -> List[str]:

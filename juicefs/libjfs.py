@@ -201,7 +201,7 @@ class LibJuiceFS(LibJuiceFSHandle):
             b"nogroup",  # supergroup
         )
         if handle <= 0:
-            raise IOError("JuiceFS initialized failed for jfs://%s" % name)
+            raise IOError("JuiceFS initialized failed for %s" % name)
         return handle
 
     def __getitem__(self, handle: int):
